@@ -44,7 +44,7 @@ function PaymentContent() {
     }
   }, [searchParams, router]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!paymentData || !user) {
       alert('Please log in to continue with payment');
       return;
@@ -57,46 +57,122 @@ function PaymentContent() {
     
     setIsProcessing(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      const token = localStorage.getItem('token');
       
-      console.log('Creating booking for user:', user);
-      console.log('User email:', user?.email);
+      // For now, create a mock booking since backend isn't fully set up
+      if (token === 'mock-jwt-token') {
+        console.log('=== USING MOCK PAYMENT FLOW ===');
+        
+        // Simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Create mock booking data
+        const bookingData = {
+          id: `BK${Date.now()}`,
+          listing: {
+            id: paymentData.listingId,
+            title: paymentData.listingTitle,
+            location: 'Mock Location',
+            image: paymentData.listingImage,
+            pricePerNight: paymentData.totalPrice / (Math.ceil((new Date(paymentData.checkOut).getTime() - new Date(paymentData.checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1)
+          },
+          checkIn: paymentData.checkIn,
+          checkOut: paymentData.checkOut,
+          totalPrice: paymentData.totalPrice,
+          status: 'confirmed',
+          guest: {
+            name: user.name || 'Guest',
+            email: user.email || 'guest@example.com'
+          },
+          createdAt: new Date().toISOString(),
+          paymentMethod: selectedMethod,
+          paymentId: `PAY${Date.now()}`
+        };
+        
+        // Store in sessionStorage for success page
+        sessionStorage.setItem('lastBooking', JSON.stringify(bookingData));
+        console.log('Stored mock booking in sessionStorage');
+        
+        // Also save to localStorage for persistence across sessions
+        const allBookings = JSON.parse(localStorage.getItem('allUserBookings') || '[]');
+        allBookings.push(bookingData);
+        localStorage.setItem('allUserBookings', JSON.stringify(allBookings));
+        console.log('Saved booking to localStorage for persistence');
+        
+        // Navigate to bookings page with success state
+        router.push('/bookings?success=true');
+        return;
+      }
       
-      // Create booking data
+      // Real backend flow (when backend is properly set up)
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          listingId: paymentData.listingId,
+          checkIn: paymentData.checkIn,
+          checkOut: paymentData.checkOut,
+          totalPrice: paymentData.totalPrice,
+          paymentMethod: selectedMethod,
+          paymentId: `PAY${Date.now()}`,
+          numGuests: 1,
+          specialRequests: ''
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to create booking');
+      }
+
+      console.log('Booking created successfully:', result.data);
+      
+      // Store booking data for success page
       const bookingData = {
-        id: `BK${Date.now()}`,
+        id: result.data._id,
         listing: {
-          id: paymentData.listingId,
-          title: paymentData.listingTitle,
-          location: 'Location',
-          image: paymentData.listingImage,
-          pricePerNight: paymentData.totalPrice / (Math.ceil((new Date(paymentData.checkOut).getTime() - new Date(paymentData.checkIn).getTime()) / (1000 * 60 * 60 * 24)) || 1)
+          id: result.data.listing._id,
+          title: result.data.listing.title,
+          location: `${result.data.listing.address.city}, ${result.data.listing.address.country}`,
+          image: result.data.listing.images[0]?.url || paymentData.listingImage,
+          pricePerNight: result.data.listing.pricePerNight
         },
-        checkIn: paymentData.checkIn,
-        checkOut: paymentData.checkOut,
-        totalPrice: paymentData.totalPrice,
-        status: 'confirmed' as const,
+        checkIn: result.data.checkIn,
+        checkOut: result.data.checkOut,
+        totalPrice: result.data.totalPrice,
+        status: result.data.status,
         guest: {
-          name: user.name || 'Guest',
-          email: user.email || 'guest@example.com'
+          name: result.data.guest.name,
+          email: result.data.guest.email
         },
-        createdAt: new Date().toISOString(),
-        paymentMethod: selectedMethod,
-        paymentId: `PAY${Date.now()}`
+        createdAt: result.data.createdAt,
+        paymentMethod: result.data.paymentMethod,
+        paymentId: result.data.paymentId
       };
       
-      console.log('Created booking data:', bookingData);
-      
-      // Store booking data in sessionStorage for the success page
+      // Store in sessionStorage for success page
       sessionStorage.setItem('lastBooking', JSON.stringify(bookingData));
       console.log('Stored booking in sessionStorage');
       
       // Navigate to bookings page with success state
-      console.log('Navigating to bookings page...');
       router.push('/bookings?success=true');
-    }, 2000);
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Payment failed: ${errorMessage}`);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (!paymentData) {

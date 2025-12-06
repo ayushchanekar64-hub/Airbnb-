@@ -61,30 +61,30 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Please log in to view your profile.</p>
+          <p className="text-gray-300">Please log in to view your profile.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">My Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your personal information and preferences</p>
+          <h1 className="text-3xl font-bold text-white">My Profile</h1>
+          <p className="text-gray-300 mt-2">Manage your personal information and preferences</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Card */}
           <div className="lg:col-span-1">
-            <Card>
+            <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="text-center">
                   <div className="relative inline-block">
-                    <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
+                    <div className="w-24 h-24 bg-gray-700 rounded-full mx-auto flex items-center justify-center">
                       {avatar ? (
                         <img
                           src={avatar}
@@ -140,10 +140,10 @@ export default function ProfilePage() {
 
           {/* Edit Form */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Personal Information</CardTitle>
+                  <CardTitle className="text-white">Personal Information</CardTitle>
                   {!isEditing ? (
                     <Button
                       variant="outline"
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="bio">Bio</Label>
+                  <Label htmlFor="bio" className="text-gray-200">Bio</Label>
                   <textarea
                     id="bio"
                     name="bio"
@@ -223,7 +223,7 @@ export default function ProfilePage() {
                     onChange={handleChange}
                     disabled={!isEditing}
                     rows={4}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:text-gray-500"
+                    className="mt-1 w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-800 disabled:text-gray-400 text-white placeholder-gray-400"
                     placeholder="Tell us about yourself..."
                   />
                 </div>
@@ -231,38 +231,41 @@ export default function ProfilePage() {
             </Card>
 
             {/* Preferences Card */}
-            <Card className="mt-6">
+            <Card className="mt-6 bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle>Preferences</CardTitle>
+                <CardTitle className="text-white">Preferences</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="language">Language</Label>
+                    <Label htmlFor="language" className="text-gray-200">Language</Label>
                     <select
                       id="language"
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                       defaultValue="en"
                     >
-                      <option value="en">English</option>
-                      <option value="es">Español</option>
-                      <option value="fr">Français</option>
-                      <option value="de">Deutsch</option>
-                      <option value="zh">中文</option>
+                      <option value="en" className="bg-gray-700">English</option>
+                      <option value="hi" className="bg-gray-700">हिन्दी (Hindi)</option>
+                      <option value="mr" className="bg-gray-700">मराठी (Marathi)</option>
+                      <option value="es" className="bg-gray-700">Español</option>
+                      <option value="fr" className="bg-gray-700">Français</option>
+                      <option value="de" className="bg-gray-700">Deutsch</option>
+                      <option value="zh" className="bg-gray-700">中文</option>
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="currency">Currency</Label>
+                    <Label htmlFor="currency" className="text-gray-200">Currency</Label>
                     <select
                       id="currency"
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="mt-1 w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                       defaultValue="USD"
                     >
-                      <option value="USD">USD - US Dollar</option>
-                      <option value="EUR">EUR - Euro</option>
-                      <option value="GBP">GBP - British Pound</option>
-                      <option value="JPY">JPY - Japanese Yen</option>
-                      <option value="CAD">CAD - Canadian Dollar</option>
+                      <option value="USD" className="bg-gray-700">USD - US Dollar</option>
+                      <option value="EUR" className="bg-gray-700">EUR - Euro</option>
+                      <option value="GBP" className="bg-gray-700">GBP - British Pound</option>
+                      <option value="JPY" className="bg-gray-700">JPY - Japanese Yen</option>
+                      <option value="CAD" className="bg-gray-700">CAD - Canadian Dollar</option>
+                      <option value="INR" className="bg-gray-700">INR - Indian Rupee</option>
                     </select>
                   </div>
                 </div>

@@ -106,14 +106,14 @@ export default function HomePage() {
   };
 
   const categories: Category[] = [
-    { id: 'luxury', name: 'Luxury', icon: HomeIcon, count: '2,456', gradient: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { id: 'beach', name: 'Beach', icon: HomeIcon, count: '1,823', gradient: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-    { id: 'mountain', name: 'Mountain', icon: HomeIcon, count: '987', gradient: 'bg-gradient-to-r from-green-500 to-emerald-500' },
-    { id: 'camping', name: 'Camping', icon: HomeIcon, count: '654', gradient: 'bg-gradient-to-r from-yellow-500 to-orange-500' },
-    { id: 'rooms', name: 'Rooms', icon: HomeIcon, count: '3,127', gradient: 'bg-gradient-to-r from-red-500 to-pink-500' },
-    { id: 'farms', name: 'Farms', icon: HomeIcon, count: '432', gradient: 'bg-gradient-to-r from-indigo-500 to-purple-500' },
-    { id: 'city', name: 'City', icon: HomeIcon, count: '2,890', gradient: 'bg-gradient-to-r from-gray-600 to-gray-800' },
-    { id: 'trending', name: 'Trending', icon: TrendingUp, count: '1,234', gradient: 'bg-gradient-to-r from-orange-500 to-red-500' }
+    { id: 'luxury', name: 'Luxury', icon: HomeIcon, count: '5', gradient: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+    { id: 'beach', name: 'Beach', icon: HomeIcon, count: '3', gradient: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
+    { id: 'mountain', name: 'Mountain', icon: HomeIcon, count: '2', gradient: 'bg-gradient-to-r from-green-500 to-emerald-500' },
+    { id: 'camping', name: 'Camping', icon: HomeIcon, count: '1', gradient: 'bg-gradient-to-r from-yellow-500 to-orange-500' },
+    { id: 'rooms', name: 'Rooms', icon: HomeIcon, count: '3', gradient: 'bg-gradient-to-r from-red-500 to-pink-500' },
+    { id: 'farms', name: 'Farms', icon: HomeIcon, count: '1', gradient: 'bg-gradient-to-r from-indigo-500 to-purple-500' },
+    { id: 'city', name: 'City', icon: HomeIcon, count: '4', gradient: 'bg-gradient-to-r from-gray-600 to-gray-800' },
+    { id: 'trending', name: 'Trending', icon: TrendingUp, count: '1', gradient: 'bg-gradient-to-r from-orange-500 to-red-500' }
   ];
 
   useEffect(() => {

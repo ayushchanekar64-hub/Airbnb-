@@ -4,7 +4,6 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Navbar from "@/components/layout/Navbar";
-import DatePickerStyling from "@/components/DatePickerStyling";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +32,6 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <DatePickerStyling />
             {children}
           </AuthProvider>
         </ThemeProvider>

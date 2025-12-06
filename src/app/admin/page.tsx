@@ -77,16 +77,16 @@ export default function AdminDashboard() {
 
     // Mock data
     const mockUsers: User[] = [
-      { id: '1', name: 'John Doe', email: 'john@example.com', role: 'user', joinDate: new Date('2024-01-15'), status: 'active' },
-      { id: '2', name: 'Sarah Smith', email: 'sarah@example.com', role: 'host', joinDate: new Date('2024-01-20'), status: 'active' },
-      { id: '3', name: 'Mike Johnson', email: 'mike@example.com', role: 'user', joinDate: new Date('2024-02-01'), status: 'suspended' },
+      { id: '1', name: 'madhavan panchbhave ', email: 'madhu@example.com', role: 'user', joinDate: new Date('2024-01-15'), status: 'active' },
+      { id: '2', name: 'Krunal kaware', email: 'krunal@example.com', role: 'host', joinDate: new Date('2024-01-20'), status: 'active' },
+      { id: '3', name: 'Ayush chanekar', email: 'ayush@example.com', role: 'user', joinDate: new Date('2024-02-01'), status: 'suspended' },
     ];
 
     const mockListings: Listing[] = [
       {
         id: '1',
         title: 'Luxury Beach Villa',
-        hostName: 'Sarah Smith',
+        hostName: 'Krunal kaware',
         location: 'Miami Beach, FL',
         price: 450,
         rating: 4.8,
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
       {
         id: '2',
         title: 'Modern Downtown Loft',
-        hostName: 'John Doe',
+        hostName: 'madhavan panchbhave ',
         location: 'New York, NY',
         price: 280,
         rating: 4.9,
@@ -108,8 +108,8 @@ export default function AdminDashboard() {
     ];
 
     const mockBookings: Booking[] = [
-      { id: '1', listingTitle: 'Luxury Beach Villa', guestName: 'Mike Johnson', totalPrice: 1350, status: 'confirmed', createdAt: new Date('2024-02-15') },
-      { id: '2', listingTitle: 'Modern Downtown Loft', guestName: 'Emily Davis', totalPrice: 560, status: 'pending', createdAt: new Date('2024-02-18') },
+      { id: '1', listingTitle: 'Luxury Beach Villa', guestName: 'Krunal kaware', totalPrice: 1350, status: 'confirmed', createdAt: new Date('2024-02-15') },
+      { id: '2', listingTitle: 'Modern Downtown Loft', guestName: 'madhavan panchbhave ', totalPrice: 560, status: 'pending', createdAt: new Date('2024-02-18') },
     ];
 
     const mockAnalytics: Analytics = {
@@ -557,11 +557,11 @@ export default function AdminDashboard() {
               </div>
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-green-50 p-2 rounded">
-                  <div className="text-green-600 font-bold">450</div>
+                  <div className="text-green-600 font-bold">45</div>
                   <div className="text-xs text-gray-600">Confirmed</div>
                 </div>
                 <div className="bg-yellow-50 p-2 rounded">
-                  <div className="text-yellow-600 font-bold">120</div>
+                  <div className="text-yellow-600 font-bold">0</div>
                   <div className="text-xs text-gray-600">Pending</div>
                 </div>
                 <div className="bg-red-50 p-2 rounded">

@@ -48,7 +48,7 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T>(endpoint: string, data: Record<string, unknown>): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -89,8 +89,8 @@ export const api = {
       password: string;
       role: 'guest' | 'host';
     }) => apiClient.post('/auth/register', userData),
-    logout: () => apiClient.post('/auth/logout'),
-    refreshToken: () => apiClient.post('/auth/refresh'),
+    logout: () => apiClient.post('/auth/logout', {}),
+    refreshToken: () => apiClient.post('/auth/refresh', {}),
     verifyEmail: (token: string) => apiClient.post('/auth/verify-email', { token }),
     forgotPassword: (email: string) => apiClient.post('/auth/forgot-password', { email }),
     resetPassword: (token: string, password: string) =>
@@ -179,10 +179,10 @@ export const api = {
     update: (id: string, data: any) => apiClient.put(`/bookings/${id}`, data),
     cancel: (id: string, reason?: string) =>
       apiClient.post(`/bookings/${id}/cancel`, { reason }),
-    confirm: (id: string) => apiClient.post(`/bookings/${id}/confirm`),
+    confirm: (id: string) => apiClient.post(`/bookings/${id}/confirm`, {}),
     reject: (id: string, reason?: string) =>
       apiClient.post(`/bookings/${id}/reject`, { reason }),
-    complete: (id: string) => apiClient.post(`/bookings/${id}/complete`),
+    complete: (id: string) => apiClient.post(`/bookings/${id}/complete`, {}),
     getUserBookings: (status?: 'pending' | 'confirmed' | 'cancelled' | 'completed') =>
       apiClient.get(`/bookings/user${status ? `?status=${status}` : ''}`),
     getHostBookings: (status?: 'pending' | 'confirmed' | 'cancelled' | 'completed') =>
@@ -199,7 +199,7 @@ export const api = {
     createConversation: (userId: string, propertyId: string) =>
       apiClient.post('/messages/conversations', { userId, propertyId }),
     markAsRead: (conversationId: string) =>
-      apiClient.post(`/messages/conversations/${conversationId}/read`),
+      apiClient.post(`/messages/conversations/${conversationId}/read`, {}),
     deleteConversation: (conversationId: string) =>
       apiClient.delete(`/messages/conversations/${conversationId}`),
     uploadImage: (conversationId: string, formData: FormData) => {
@@ -226,7 +226,7 @@ export const api = {
     getById: (id: string) => apiClient.get(`/reviews/${id}`),
     update: (id: string, data: any) => apiClient.put(`/reviews/${id}`, data),
     delete: (id: string) => apiClient.delete(`/reviews/${id}`),
-    markHelpful: (id: string) => apiClient.post(`/reviews/${id}/helpful`),
+    markHelpful: (id: string) => apiClient.post(`/reviews/${id}/helpful`, {}),
     report: (id: string, reason: string) =>
       apiClient.post(`/reviews/${id}/report`, { reason }),
   },

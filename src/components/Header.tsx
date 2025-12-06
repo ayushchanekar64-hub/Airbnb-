@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,15 +21,12 @@ import {
   MessageCircle,
   Eye,
   Star,
-  Moon,
-  Sun,
   Calendar,
   Bot
 } from 'lucide-react';
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const { resolvedTheme, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
@@ -115,21 +111,9 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* Right side - Theme, Language, Login/Profile */}
+          {/* Right side - Language, Login/Profile */}
           <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className={`flex items-center space-x-1 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors ${
-                isScrolled ? 'text-white hover:text-gray-200' : 'text-white hover:text-gray-200'
-              }`}
-            >
-              {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              <span className="hidden md:inline">
-                {resolvedTheme === 'dark' ? 'Light' : 'Dark'}
-              </span>
-            </button>
-
+            
             {/* Language Selector */}
             <button className={`flex items-center space-x-1 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors ${
               isScrolled ? 'text-white hover:text-gray-200' : 'text-white hover:text-gray-200'
