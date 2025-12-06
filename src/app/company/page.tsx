@@ -55,25 +55,25 @@ export default function CompanyPage() {
 
   const team = [
     {
-      name: 'Alex Thompson',
+      name: 'madhavan panchbhave ',
       role: 'CEO & Founder',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop',
       bio: 'Former tech executive with 15+ years in travel industry.'
     },
     {
-      name: 'Sarah Chen',
+      name: 'krunal kaware',
       role: 'CTO',
       image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&auto=format&fit=crop',
       bio: 'Engineering leader from top tech companies, passionate about scalable solutions.'
     },
     {
-      name: 'Michael Rodriguez',
+      name: 'ayush chanekar',
       role: 'Head of Operations',
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop',
       bio: 'Operations expert with experience managing global teams and logistics.'
     },
     {
-      name: 'Emily Johnson',
+      name: 'ayush chanekar',
       role: 'Head of Marketing',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop',
       bio: 'Marketing strategist who built brands for Fortune 500 companies.'
