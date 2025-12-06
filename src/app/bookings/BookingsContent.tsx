@@ -7,7 +7,7 @@ import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, User, DollarSign, Search, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, DollarSign, Search, CheckCircle, Download } from 'lucide-react';
 import Link from 'next/link';
 
 interface Booking {
@@ -37,10 +37,62 @@ export default function BookingsContent() {
   const searchParams = useSearchParams();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [lastBooking, setLastBooking] = useState<any>(null);
+  const [showSlipDownload, setShowSlipDownload] = useState(false);
+
+  // Download payment slip function
+  const downloadPaymentSlip = (bookingId: string) => {
+    console.log('Attempting to download slip for booking:', bookingId);
+    const slipData = localStorage.getItem(`paymentSlip_${bookingId}`);
+    console.log('Slip data found:', slipData);
+    
+    if (slipData) {
+      try {
+        const slip = JSON.parse(slipData);
+        console.log('Parsed slip:', slip);
+        
+        // Create slip content
+        const slipContent = `
+PAYMENT SLIP
+================
+Booking ID: ${slip.id}
+Property: ${slip.listing.title}
+Location: ${slip.listing.location}
+Check-in: ${slip.checkIn}
+Check-out: ${slip.checkOut}
+Total Amount: $${slip.totalPrice}
+Payment Method: ${slip.paymentDetails.method.toUpperCase()}
+${slip.paymentDetails.cardLast4 ? `Card Ending: ****${slip.paymentDetails.cardLast4}` : ''}
+${slip.paymentDetails.upiId ? `UPI ID: ${slip.paymentDetails.upiId}` : ''}
+Payment Date: ${new Date(slip.paymentDetails.processedAt).toLocaleString()}
+Status: CONFIRMED
+================
+Thank you for booking with StayEase!
+      `.trim();
+        
+        // Create and download file
+        const blob = new Blob([slipContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `payment_slip_${bookingId}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        console.log('Download initiated successfully');
+      } catch (error) {
+        console.error('Error processing slip:', error);
+        alert('Error downloading payment slip. Please try again.');
+      }
+    } else {
+      console.log('No slip data found for booking:', bookingId);
+      alert('Payment slip not available for this booking.');
+    }
+  };
 
   useEffect(() => {
     if (!user) {
@@ -74,30 +126,57 @@ export default function BookingsContent() {
           }
         }
 
-        // Mock data for demo
-        const mockBookings: Booking[] = [
-          {
-            id: '1',
-            listing: {
-              id: '1',
-              title: 'Cozy Mountain Cabin',
-              location: 'Aspen, CO',
-              image: 'https://images.unsplash.com/photo-1571003123894-1fba9c8cd528?w=800&auto=format&fit=crop',
-              pricePerNight: 450
-            },
-            checkIn: '2024-01-05',
-            checkOut: '2024-01-08',
-            totalPrice: 540,
-            status: 'completed',
-            guest: {
-              name: user?.name || 'Test User',
-              email: user?.email || 'test@example.com'
-            },
-            createdAt: '2023-12-20'
+        // Get bookings from localStorage or use mock data
+        const savedBookings = localStorage.getItem('userBookings');
+        let allBookings: Booking[] = [];
+        
+        if (savedBookings) {
+          try {
+            allBookings = JSON.parse(savedBookings);
+          } catch (e) {
+            console.error('Error parsing saved bookings:', e);
+            allBookings = [];
           }
-        ];
+        }
+        
+        // Add mock data if no saved bookings
+        if (allBookings.length === 0) {
+          allBookings = [
+            {
+              id: '1',
+              listing: {
+                id: '1',
+                title: 'Cozy Mountain Cabin',
+                location: 'Aspen, CO',
+                image: 'https://images.unsplash.com/photo-1571003123894-1fba9c8cd528?w=800&auto=format&fit=crop',
+                pricePerNight: 450
+              },
+              checkIn: '2024-01-05',
+              checkOut: '2024-01-08',
+              totalPrice: 540,
+              status: 'completed',
+              guest: {
+                name: user?.name || 'Test User',
+                email: user?.email || 'test@example.com'
+              },
+              createdAt: '2023-12-20'
+            }
+          ];
+          
+          // Create mock payment slip for this booking
+          const mockSlip = {
+            ...allBookings[0],
+            paymentDetails: {
+              method: 'card',
+              cardLast4: '1234',
+              upiId: null,
+              processedAt: new Date().toISOString()
+            }
+          };
+          localStorage.setItem(`paymentSlip_${allBookings[0].id}`, JSON.stringify(mockSlip));
+        }
 
-        setBookings(mockBookings);
+        setBookings(allBookings);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -285,8 +364,19 @@ export default function BookingsContent() {
                           <span>{booking.guest.name}</span>
                           <span className="ml-2 text-gray-400">({booking.guest.email})</span>
                         </div>
-                        <div className="text-xs text-gray-400">
-                          Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => downloadPaymentSlip(booking.id)}
+                            className="flex items-center gap-1 text-xs"
+                          >
+                            <Download className="h-3 w-3" />
+                            Slip
+                          </Button>
+                          <div className="text-xs text-gray-400">
+                            Booked on {new Date(booking.createdAt).toLocaleDateString()}
+                          </div>
                         </div>
                       </div>
                     </div>

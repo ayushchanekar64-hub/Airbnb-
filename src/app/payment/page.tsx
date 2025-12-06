@@ -24,6 +24,16 @@ function PaymentContent() {
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'upi' | 'wallet'>('card');
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Payment form states
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: '',
+    expiry: '',
+    cvv: '',
+    name: ''
+  });
+  const [upiId, setUpiId] = useState('');
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const data = searchParams.get('data');
@@ -50,12 +60,41 @@ function PaymentContent() {
       return;
     }
     
+    // Validate payment details
+    const newErrors: {[key: string]: string} = {};
+    
+    if (selectedMethod === 'card') {
+      if (!cardDetails.cardNumber || cardDetails.cardNumber.length < 16) {
+        newErrors.cardNumber = 'Valid card number required';
+      }
+      if (!cardDetails.expiry || !cardDetails.expiry.match(/^(0[1-9]|1[0-2])\/\d{2}$/)) {
+        newErrors.expiry = 'Valid expiry date required (MM/YY)';
+      }
+      if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
+        newErrors.cvv = 'Valid CVV required';
+      }
+      if (!cardDetails.name) {
+        newErrors.name = 'Cardholder name required';
+      }
+    }
+    
+    if (selectedMethod === 'upi') {
+      if (!upiId || !upiId.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+$/)) {
+        newErrors.upiId = 'Valid UPI ID required';
+      }
+    }
+    
     if (selectedMethod === 'wallet' && (user.walletBalance || 0) < paymentData.totalPrice) {
-      alert('Insufficient wallet balance');
+      newErrors.wallet = 'Insufficient wallet balance';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     
     setIsProcessing(true);
+    setErrors({});
     
     try {
       const token = localStorage.getItem('token');
@@ -95,13 +134,27 @@ function PaymentContent() {
         console.log('Stored mock booking in sessionStorage');
         
         // Also save to localStorage for persistence across sessions
-        const allBookings = JSON.parse(localStorage.getItem('allUserBookings') || '[]');
+        const allBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
         allBookings.push(bookingData);
-        localStorage.setItem('allUserBookings', JSON.stringify(allBookings));
+        localStorage.setItem('userBookings', JSON.stringify(allBookings));
         console.log('Saved booking to localStorage for persistence');
         
+        // Generate payment slip
+        const paymentSlip = {
+          ...bookingData,
+          paymentDetails: {
+            method: selectedMethod,
+            cardLast4: selectedMethod === 'card' ? cardDetails.cardNumber.slice(-4) : null,
+            upiId: selectedMethod === 'upi' ? upiId : null,
+            processedAt: new Date().toISOString()
+          }
+        };
+        
+        // Store payment slip for download
+        localStorage.setItem(`paymentSlip_${bookingData.id}`, JSON.stringify(paymentSlip));
+        
         // Navigate to bookings page with success state
-        router.push('/bookings?success=true');
+        router.push('/bookings?success=true&slip=true');
         return;
       }
       
@@ -249,19 +302,44 @@ function PaymentContent() {
                     <div className='space-y-4'>
                       <input
                         type='text'
+                        placeholder='Cardholder Name'
+                        value={cardDetails.name}
+                        onChange={(e) => setCardDetails({...cardDetails, name: e.target.value})}
+                        className='w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
+                      />
+                      {errors.name && <p className="text-red-400 text-sm">{errors.name}</p>}
+                      
+                      <input
+                        type='text'
                         placeholder='Card Number'
+                        value={cardDetails.cardNumber}
+                        onChange={(e) => setCardDetails({...cardDetails, cardNumber: e.target.value.replace(/\s/g, '')})}
+                        maxLength={16}
                         className='w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
                       />
-                      <input
-                        type='text'
-                        placeholder='MM/YY'
-                        className='w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
-                      />
-                      <input
-                        type='text'
-                        placeholder='CVV'
-                        className='w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
-                      />
+                      {errors.cardNumber && <p className="text-red-400 text-sm">{errors.cardNumber}</p>}
+                      
+                      <div className='flex gap-2'>
+                        <input
+                          type='text'
+                          placeholder='MM/YY'
+                          value={cardDetails.expiry}
+                          onChange={(e) => setCardDetails({...cardDetails, expiry: e.target.value})}
+                          maxLength={5}
+                          className='flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
+                        />
+                        {errors.expiry && <p className="text-red-400 text-sm">{errors.expiry}</p>}
+                        
+                        <input
+                          type='text'
+                          placeholder='CVV'
+                          value={cardDetails.cvv}
+                          onChange={(e) => setCardDetails({...cardDetails, cvv: e.target.value})}
+                          maxLength={4}
+                          className='flex-1 px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
+                        />
+                        {errors.cvv && <p className="text-red-400 text-sm">{errors.cvv}</p>}
+                      </div>
                     </div>
                   )}
 
@@ -269,9 +347,12 @@ function PaymentContent() {
                     <div className='space-y-4'>
                       <input
                         type='text'
-                        placeholder='UPI ID'
+                        placeholder='UPI ID (e.g., user@upi)'
+                        value={upiId}
+                        onChange={(e) => setUpiId(e.target.value)}
                         className='w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400'
                       />
+                      {errors.upiId && <p className="text-red-400 text-sm">{errors.upiId}</p>}
                     </div>
                   )}
 
@@ -279,6 +360,7 @@ function PaymentContent() {
                     <div className='space-y-4'>
                       <div className='bg-gray-700 p-4 rounded-lg border border-gray-600'>
                         <p className='text-green-400 font-medium'>Wallet Balance: ${user?.walletBalance || '0.00'}</p>
+                        {errors.wallet && <p className="text-red-400 text-sm mt-2">{errors.wallet}</p>}
                       </div>
                     </div>
                   )}

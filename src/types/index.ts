@@ -88,4 +88,5 @@ export interface RegisterData {
   email: string;
   password: string;
   role: 'user' | 'host';
+  phone?: string;
 }
